@@ -1,5 +1,7 @@
 <?php
 
+namespace Helpers;
+
 use Visus\Cuid2\Cuid2;
 
 class Generator
