@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-    import MainLayout from '@/Layouts/MainLayout.vue';
     import { Car, House, NotebookPen, MapPin, Fuel } from 'lucide-vue-next';
 
     const staffNavData = {
@@ -34,7 +33,5 @@
 </script>
 
 <template>
-    <MainLayout :data="staffNavData">
-        <slot />
-    </MainLayout>
+    <slot />
 </template>
