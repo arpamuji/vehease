@@ -61,7 +61,7 @@ class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
-            'role' => \App\Enums\RoleType::class,
+            'role' => RoleType::class,
         ];
     }
 
@@ -69,6 +69,11 @@ class User extends Authenticatable
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class);
+    }
+
+    public function creatorBookings(): HasMany
+    {
+        return $this->hasMany(Booking::class, 'creator_id');
     }
 
     public function requestedBookings(): HasMany

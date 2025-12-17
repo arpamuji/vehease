@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Parables\Cuid\CuidAsPrimaryKey;
 
 /**
  * @property int $id
@@ -28,5 +29,27 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Approval extends Model
 {
-    //
+    use CuidAsPrimaryKey;
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
+
+    protected $fillable = [
+        'booking_id',
+        'approver_id',
+        'status',
+        'level',
+    ];
+
+    // Relationships
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approver_id');
+    }
+
+    public function booking()
+    {
+        return $this->belongsTo(Booking::class, 'booking_id');
+    }
 }
