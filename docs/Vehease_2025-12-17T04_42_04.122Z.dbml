@@ -1,0 +1,197 @@
+enum LOCATION_TYPE {
+	MAIN_OFFICE
+	BRANCH_OFFICE
+	MINING_SITE
+}
+
+
+
+enum ROLE_TYPE {
+	ROOT
+	ADMIN
+	MANAGER
+	EMPLOYEE
+}
+
+
+
+enum VEHICLE_CLASS {
+	PASSENGER
+	CARGO
+}
+
+
+
+enum APPROVAL_STATUS {
+	PENDING
+	APPROVED
+	REJECTED
+}
+
+
+
+enum BOOKING_STATUS {
+	PENDING
+	APPROVED
+	REJECTED
+	ON_TRIP
+	COMPLETED
+}
+
+
+
+enum FUEL_CATEGORY {
+	DIESEL
+	GASOLINE
+	ELECTRIC
+}
+
+
+
+enum TRIP_CATEGORY {
+	DEPARTURE
+	ARRIVAL
+}
+
+Table users [headercolor: #d4412a] {
+	id varchar(24) [ pk, not null, unique ]
+	name varchar(100) [ not null ]
+	email varchar(100) [ not null ]
+	password text [ not null ]
+	role role_type [ not null ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+	location_id varchar(24) [ not null ]
+
+	Note: 'Employees'
+}
+
+Table locations [headercolor: #26ace0] {
+	id varchar(24) [ pk, not null, unique ]
+	type location_type [ not null ]
+	name varchar(100) [ not null ]
+	region varchar(32) [ not null ]
+	address text [ not null ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+}
+
+Table vehicles [headercolor: #69b7d6] {
+	id varchar(24) [ pk, not null, unique ]
+	class vehicle_class [ not null ]
+	brand varchar(24) [ not null ]
+	model varchar(32) [ not null ]
+	license_number text [ not null ]
+	chasis_number text [ not null ]
+	engine_number text [ not null ]
+	color text [ not null ]
+	fuel_category fuel_category [ not null ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+	location_id varchar(24) [ not null ]
+}
+
+Table bookings [headercolor: #1cc95f] {
+	id varchar(24) [ pk, not null, unique ]
+	status booking_status [ not null ]
+	start_date timestamp [ not null ]
+	end_date timestamp [ not null ]
+	note text [ not null ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+	vehicle_id varchar(24) [ not null ]
+	driver_id varchar(24) [ not null ]
+	requester_id varchar(24) [ not null ]
+}
+
+Table approvals [headercolor: #175e7a] {
+	id varchar(24) [ pk, not null, unique ]
+	level integer [ not null ]
+	status approval_status [ not null ]
+	approved_at timestamp
+	rejected_at timestamp
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+	approver_id varchar(32) [ not null ]
+	booking_id varchar(32) [ not null ]
+}
+
+Table maintenances [headercolor: #e8a73f] {
+	id varchar(24) [ pk, not null, unique ]
+	start_date timestamp [ not null ]
+	end_date timestamp [ not null ]
+	note text [ not null ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+	vehicle_id varchar(24) [ not null ]
+}
+
+Table fuel_transactions [headercolor: #7d34e3] {
+	id varchar(24) [ pk, not null, unique ]
+	liter_amount decimal [ not null ]
+	price_per_liter integer [ not null ]
+	odometer_at_refuel integer [ not null ]
+	note text [ not null ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+	vehicle_id varchar(24) [ not null ]
+	driver_id varchar(24) [ not null ]
+}
+
+Table trips [headercolor: #175e7a] {
+	id varchar(24) [ pk, not null, unique ]
+	category trip_category [ not null ]
+	odometer integer [ not null ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+	vehicle_id varchar(24) [ not null ]
+	booking_id varchar(24) [ not null ]
+}
+
+Ref fk_user_approval {
+	approvals.approver_id > users.id [ delete: no action, update: no action ]
+}
+
+Ref fk_approval_booking {
+	bookings.id < approvals.booking_id [ delete: no action, update: no action ]
+}
+
+Ref fk_driver_booking {
+	bookings.driver_id > users.id [ delete: no action, update: no action ]
+}
+
+Ref fk_requester_booking {
+	bookings.requester_id > users.id [ delete: no action, update: no action ]
+}
+
+Ref fk_location_user {
+	users.location_id > locations.id [ delete: no action, update: no action ]
+}
+
+Ref fk_location_vehicle {
+	vehicles.location_id > locations.id [ delete: no action, update: no action ]
+}
+
+Ref fk_vehicle_maintenance {
+	maintenances.vehicle_id > vehicles.id [ delete: no action, update: no action ]
+}
+
+Ref fk_vehicle_fuel {
+	fuel_transactions.vehicle_id > vehicles.id [ delete: no action, update: no action ]
+}
+
+Ref fk_driver_fuel {
+	fuel_transactions.driver_id > users.id [ delete: no action, update: no action ]
+}
+
+Ref fk_vehicle_booking {
+	bookings.vehicle_id > vehicles.id [ delete: no action, update: no action ]
+}
+
+Ref fk_vehicle_trip {
+	trips.vehicle_id > vehicles.id [ delete: no action, update: no action ]
+}
+
+Ref fk_booking_trip {
+	trips.booking_id > bookings.id [ delete: no action, update: no action ]
+}

@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-    import MainLayout from '@/Layouts/MainLayout.vue';
     import { Car, House, NotebookPen, Users, BarChart, CheckSquare } from 'lucide-vue-next';
 
     const managerNavData = {
@@ -39,7 +38,5 @@
 </script>
 
 <template>
-    <MainLayout :data="managerNavData">
-        <slot />
-    </MainLayout>
+    <slot />
 </template>

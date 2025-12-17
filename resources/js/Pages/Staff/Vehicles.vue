@@ -1,10 +1,3 @@
-<script lang="ts">
-    import MainLayout from '@/Layouts/MainLayout.vue';
-
-    export default {
-        layout: MainLayout,
-    };
-</script>
 <script lang="ts" setup>
     import PageHeader from '@/Components/custom/PageHeader.vue';
     import {

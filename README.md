@@ -1,59 +1,94 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Vehease - Vehicle Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem manajemen peminjaman kendaraan operasional perusahaan berbasis web.
 
-## About Laravel
+## 🚀 Live Deployment
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Aplikasi dapat diakses secara online melalui link berikut:
+**[https://vehease.arpamuji.dev](https://vehease.arpamuji.dev)**
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+> **Akses Login:**
+> Silakan tambahkan path **`/auth/login`** pada URL untuk masuk ke halaman login.
+> Contoh: `https://vehease.arpamuji.dev/auth/login`
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 📝 Status Pengerjaan (Development Progress)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Saat ini pengembangan berfokus pada alur inti peminjaman kendaraan.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### ✅ Selesai (Completed)
 
-## Laravel Sponsors
+- **Booking Request:** Staff sudah bisa mengajukan peminjaman kendaraan.
+- **Vehicle Availability Logic:** Logika pengecekan ketersediaan kendaraan (filter tanggal & lokasi) sudah berjalan. Sistem otomatis menyembunyikan kendaraan yang sedang dipakai.
+- **Authentication & Authorization:** Login dan pembagian hak akses berdasarkan role user.
+- **Deployment:** Environment staging sudah live menggunakan Docker container.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 🚧 Sedang Dikerjakan (In Progress)
 
-### Premium Partners
+- **Approval Workflow:** Mekanisme persetujuan berjenjang (Multi-level approval) oleh Manager/Branch Manager.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### ⏳ Belum Dikerjakan (Pending Features)
 
-## Contributing
+- Modul Maintenance Kendaraan.
+- Pencatatan Bahan Bakar (Fuel Logs).
+- Riwayat Perjalanan (Trip Logs).
+- Dashboard Reporting & Analytics.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 📂 Database Documentation
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Dokumentasi lengkap mengenai struktur database dapat ditemukan di direktori **`/docs`**, yang mencakup:
 
-## Security Vulnerabilities
+- **ERD (Entity Relationship Diagram):** Visualisasi relasi antar tabel.
+- **SQL:** Script schema database dan migrasi.
+- **DBML:** Definisi struktur database.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## 🔑 Akun Demo (Credentials)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Gunakan akun berikut untuk melakukan testing pada aplikasi.
+_(Default Password untuk semua akun: **password123**)_
+
+### 1. Administrator
+
+Akses penuh ke sistem, manajemen master data, dan bisa melakukan Create Booking.
+
+- `admin1@vehease.com`
+- `admin2@vehease.com`
+- `admin3@vehease.com`
+- `admin4@vehease.com`
+
+### 2. Manager (Approver - Head Office)
+
+Bertugas melakukan approval untuk request dari kantor pusat.
+
+- `manager1@vehease.com`
+- `manager2@vehease.com`
+
+### 3. Branch Manager (Approver - Site/Cabang)
+
+Bertugas melakukan approval untuk request dari lokasi cabang/site.
+
+- `branchmanager1@vehease.com`
+- `branchmanager2@vehease.com`
+- `branchmanager3@vehease.com`
+- `branchmanager4@vehease.com`
+
+### 4. Staff (Requester)
+
+User yang mengajukan peminjaman kendaraan.
+
+- `staff1@vehease.com` s/d `staff9@vehease.com`
+
+---
+
+## 🛠 Tech Stack
+
+- **Backend:** Laravel 11 (PHP 8.2+)
+- **Frontend:** Vue.js 3 + Inertia.js
+- **UI Component:** Shadcn Vue + Tailwind CSS
+- **Database:** PostgreSQL
+- **Infrastructure:** Docker & Nginx
