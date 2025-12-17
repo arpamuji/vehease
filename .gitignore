@@ -2,6 +2,8 @@
 .DS_Store
 .env
 .env.backup
+.env.local
+.env.staging
 .env.production
 .phpactor.json
 .phpunit.result.cache
@@ -19,6 +21,13 @@
 /storage/*.key
 /storage/pail
 /vendor
+/storage/debugbar
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# IDE Helper files
+_ide_helper.php
+_ide_helper_models.php
+.phpstorm.meta.php
+.ide-helper.php
