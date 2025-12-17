@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Parables\Cuid\CuidAsPrimaryKey;
 
 /**
  * @property string $id
@@ -32,5 +33,23 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Booking extends Model
 {
+    use CuidAsPrimaryKey;
+
     public $incrementing = false;
+    protected $keyType = 'string';
+    protected $fillable = [
+        'start_date',
+        'end_date',
+        'vehicle_id',
+        'driver_id',
+        'requester_id',
+        'note',
+        'status',
+    ];
+
+    // Relationships
+    public function approvals()
+    {
+        return $this->hasMany(Approval::class);
+    }
 }
