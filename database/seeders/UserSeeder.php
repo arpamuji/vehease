@@ -82,8 +82,8 @@ class UserSeeder extends Seeder
             ]);
             $adminCounter++;
         }
-        // 4. Create remaining STAFF users (total 35 employees - 1 ROOT - 2 MANAGERs - 4 ADMINs - 4 MANAGERs = 29 STAFF)
-        $remainingEmployees = 29;
+        // 4. Create remaining STAFF users (total 20 employees - 1 ROOT - 2 MANAGERs - 4 ADMINs - 4 MANAGERs = 9 STAFF)
+        $remainingEmployees = 9;
 
         for ($i = 1; $i <= $remainingEmployees; $i++) {
             $randomLocation = $allLocations->random();
@@ -91,7 +91,7 @@ class UserSeeder extends Seeder
             DB::table('users')->insert([
                 'id' => Generator::cuid(),
                 'name' => $faker->name(),
-                'email' => $faker->unique()->safeEmail(),
+                'email' => "staff{$i}@vehease.com",
                 'password' => Hash::make($defaultPassword),
                 'role' => RoleType::STAFF->value,
                 'location_id' => $randomLocation->id,

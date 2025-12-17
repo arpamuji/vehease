@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
@@ -36,5 +37,13 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Vehicle extends Model
 {
-    //
+    public $incrementing = false;
+
+    protected $keyType = 'string';
+
+    // Relationships
+    public function location(): BelongsTo
+    {
+        return $this->belongsTo(Location::class);
+    }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\FuelCategory;
+use App\Enums\VehicleClass;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,14 +15,14 @@ return new class extends Migration
     {
         Schema::create('vehicles', function (Blueprint $table) {
             $table->string('id', 24)->primary();
-            $table->string('class'); // ENUM: PASSENGER, CARGO
+            $table->enum('type', array_column(VehicleClass::cases(), 'value'));
             $table->string('brand', 24);
             $table->string('model', 32);
             $table->text('license_number');
             $table->text('chasis_number');
             $table->text('engine_number');
             $table->text('color');
-            $table->string('fuel_category'); // ENUM: DIESEL, GASOLINE, ELECTRIC
+            $table->enum('fuel_category', array_column(FuelCategory::cases(), 'value'));
 
             // Foreign Key
             $table->string('location_id', 24);
