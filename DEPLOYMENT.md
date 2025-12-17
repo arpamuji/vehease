@@ -1,17 +1,35 @@
 # VehEase Docker Deployment
 
-This document provides instructions for deploying VehEase using Docker on a VPS.
+This document provides instructions for deploying VehEase using Docker on a VPS with host Nginx.
+
+## Architecture
+
+- **PHP 8.4-FPM** - Running in Docker container
+- **MySQL 8.0** - Running in Docker container
+- **Redis 7** - Running in Docker container
+- **Nginx** - Running on host VPS (not in Docker)
+- **Supervisor** - Managing PHP-FPM and Laravel queue workers in container
 
 ## Prerequisites
 
 - VPS with Ubuntu 20.04+ or similar Linux distribution
+- Nginx installed on host system
 - Docker and Docker Compose installed
 - Domain name pointed to your VPS IP (optional)
 - SSH access to your VPS
 
 ## Installation Steps
 
-### 1. Install Docker on VPS
+### 1. Install Nginx on Host (if not already installed)
+
+```bash
+sudo apt update
+sudo apt install nginx -y
+sudo systemctl enable nginx
+sudo systemctl start nginx
+```
+
+### 2. Install Docker on VPS
 
 ```bash
 # Update package index
@@ -31,7 +49,7 @@ sudo usermod -aG docker $USER
 # Log out and back in for group changes to take effect
 ```
 
-### 2. Clone Repository on VPS
+### 3. Clone Repository on VPS
 
 ```bash
 # Clone the repository
@@ -42,7 +60,30 @@ cd vehease
 git checkout deploy/staging
 ```
 
-### 3. Configure Environment
+### 4. Configure Nginx on Host
+
+Copy the Nginx configuration to host:
+```bash
+sudo cp docker/nginx/default.conf /etc/nginx/sites-available/vehease
+
+# Edit the configuration
+sudo nano /etc/nginx/sites-available/vehease
+```
+
+Update these values in the Nginx config:
+- `server_name` - Your domain or VPS IP
+- `root` - Path to your app's public folder (e.g., `/var/www/vehease/public`)
+- `fastcgi_pass` - Should be `localhost:9000` (Docker container PHP-FPM)
+
+Enable the site:
+```bash
+sudo ln -s /etc/nginx/sites-available/vehease /etc/nginx/sites-enabled/
+sudo rm /etc/nginx/sites-enabled/default  # Remove default site
+sudo nginx -t  # Test configuration
+sudo systemctl reload nginx
+```
+
+### 5. Configure Environment
 
 ```bash
 # Copy production environment file
@@ -56,9 +97,8 @@ Update these important variables:
 - `APP_URL` - Your domain or IP address
 - `APP_KEY` - Generate with: `docker-compose run --rm app php artisan key:generate --show`
 - `DB_PASSWORD` - Strong database password
-- `APP_PORT` - Port for the application (default: 8000)
 
-### 4. Deploy Application
+### 6. Deploy Application
 
 ```bash
 # Make deploy script executable
@@ -68,17 +108,17 @@ chmod +x deploy.sh
 ./deploy.sh
 ```
 
-### 5. Generate Application Key (First Time Only)
+### 7. Generate Application Key (First Time Only)
 
 ```bash
 docker-compose exec app php artisan key:generate
 ```
 
-### 6. Access Application
+### 8. Access Application
 
 Open your browser and navigate to:
-- `http://your-vps-ip:8000`
-- Or `http://your-domain.com:8000`
+- `http://your-vps-ip`
+- Or `http://your-domain.com`
 
 ## Management Commands
 
@@ -126,55 +166,37 @@ docker-compose up -d
 
 ## Production Optimizations
 
-### 1. Set Up Nginx Reverse Proxy (Recommended)
-
-Install Nginx on host machine:
-```bash
-sudo apt install nginx
-```
-
-Create Nginx configuration:
-```bash
-sudo nano /etc/nginx/sites-available/vehease
-```
-
-Add configuration:
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
-
-    location / {
-        proxy_pass http://localhost:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-```
-
-Enable site:
-```bash
-sudo ln -s /etc/nginx/sites-available/vehease /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl reload nginx
-```
-
-### 2. Set Up SSL with Certbot
+### 1. Set Up SSL with Certbot
 
 ```bash
 sudo apt install certbot python3-certbot-nginx
 sudo certbot --nginx -d your-domain.com
 ```
 
-### 3. Set Up Firewall
+### 2. Set Up Firewall
 
 ```bash
 sudo ufw allow 22/tcp
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
 sudo ufw enable
+```
+
+### 3. Optimize PHP-FPM
+
+Edit PHP-FPM pool configuration in the container if needed:
+```bash
+docker-compose exec app bash
+nano /usr/local/etc/php-fpm.d/www.conf
+```
+
+Recommended settings:
+```ini
+pm = dynamic
+pm.max_children = 50
+pm.start_servers = 5
+pm.min_spare_servers = 5
+pm.max_spare_servers = 35
 ```
 
 ## Monitoring
@@ -193,6 +215,12 @@ docker stats
 ```bash
 docker-compose logs -f app
 tail -f storage/logs/laravel.log
+```
+
+### Check Nginx Logs
+```bash
+sudo tail -f /var/log/nginx/access.log
+sudo tail -f /var/log/nginx/error.log
 ```
 
 ## Backup

@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.4-fpm
 
 # Set working directory
 WORKDIR /var/www
@@ -13,7 +13,6 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     zip \
     unzip \
-    nginx \
     supervisor
 
 # Clear cache
@@ -33,9 +32,6 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 # Copy application files
 COPY . /var/www
 
-# Copy nginx configuration
-COPY docker/nginx/default.conf /etc/nginx/sites-available/default
-
 # Copy supervisor configuration
 COPY docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
@@ -50,8 +46,8 @@ RUN composer install --optimize-autoloader --no-dev
 # Install Node dependencies and build assets
 RUN bun install && bun run build
 
-# Expose port 80
-EXPOSE 80
+# Expose PHP-FPM port
+EXPOSE 9000
 
 # Start supervisor
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

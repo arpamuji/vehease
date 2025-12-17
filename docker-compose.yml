@@ -25,7 +25,7 @@ services:
       - db
       - redis
     ports:
-      - "${APP_PORT:-8000}:80"
+      - "${PHP_FPM_PORT:-9000}:9000"
 
   db:
     image: mysql:8.0
