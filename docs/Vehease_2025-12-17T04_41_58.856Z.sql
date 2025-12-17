@@ -1,0 +1,203 @@
+CREATE TYPE "LOCATION_TYPE" AS ENUM (
+	'MAIN_OFFICE',
+	'BRANCH_OFFICE',
+	'MINING_SITE'
+);
+
+CREATE TYPE "ROLE_TYPE" AS ENUM (
+	'ROOT',
+	'ADMIN',
+	'MANAGER',
+	'EMPLOYEE'
+);
+
+CREATE TYPE "VEHICLE_CLASS" AS ENUM (
+	'PASSENGER',
+	'CARGO'
+);
+
+CREATE TYPE "APPROVAL_STATUS" AS ENUM (
+	'PENDING',
+	'APPROVED',
+	'REJECTED'
+);
+
+CREATE TYPE "BOOKING_STATUS" AS ENUM (
+	'PENDING',
+	'APPROVED',
+	'REJECTED',
+	'ON_TRIP',
+	'COMPLETED'
+);
+
+CREATE TYPE "FUEL_CATEGORY" AS ENUM (
+	'DIESEL',
+	'GASOLINE',
+	'ELECTRIC'
+);
+
+CREATE TYPE "TRIP_CATEGORY" AS ENUM (
+	'DEPARTURE',
+	'ARRIVAL'
+);
+
+CREATE TABLE IF NOT EXISTS "users" (
+	"id" VARCHAR(24) NOT NULL UNIQUE,
+	"name" VARCHAR(100) NOT NULL,
+	"email" VARCHAR(100) NOT NULL,
+	"password" TEXT NOT NULL,
+	"role" ROLE_TYPE NOT NULL,
+	"created_at" TIMESTAMP NOT NULL,
+	"updated_at" TIMESTAMP NOT NULL,
+	"location_id" VARCHAR(24) NOT NULL,
+	PRIMARY KEY("id")
+);
+
+COMMENT ON TABLE "users" IS 'Employees';
+
+
+CREATE TABLE IF NOT EXISTS "locations" (
+	"id" VARCHAR(24) NOT NULL UNIQUE,
+	"type" LOCATION_TYPE NOT NULL,
+	"name" VARCHAR(100) NOT NULL,
+	"region" VARCHAR(32) NOT NULL,
+	"address" TEXT NOT NULL,
+	"created_at" TIMESTAMP NOT NULL,
+	"updated_at" TIMESTAMP NOT NULL,
+	PRIMARY KEY("id")
+);
+
+
+
+
+CREATE TABLE IF NOT EXISTS "vehicles" (
+	"id" VARCHAR(24) NOT NULL UNIQUE,
+	"class" VEHICLE_CLASS NOT NULL,
+	"brand" VARCHAR(24) NOT NULL,
+	"model" VARCHAR(32) NOT NULL,
+	"license_number" TEXT NOT NULL,
+	"chasis_number" TEXT NOT NULL,
+	"engine_number" TEXT NOT NULL,
+	"color" TEXT NOT NULL,
+	"fuel_category" FUEL_CATEGORY NOT NULL,
+	"created_at" TIMESTAMP NOT NULL,
+	"updated_at" TIMESTAMP NOT NULL,
+	"location_id" VARCHAR(24) NOT NULL,
+	PRIMARY KEY("id")
+);
+
+
+
+
+CREATE TABLE IF NOT EXISTS "bookings" (
+	"id" VARCHAR(24) NOT NULL UNIQUE,
+	"status" BOOKING_STATUS NOT NULL,
+	"start_date" TIMESTAMP NOT NULL,
+	"end_date" TIMESTAMP NOT NULL,
+	"note" TEXT NOT NULL,
+	"created_at" TIMESTAMP NOT NULL,
+	"updated_at" TIMESTAMP NOT NULL,
+	"vehicle_id" VARCHAR(24) NOT NULL,
+	"driver_id" VARCHAR(24) NOT NULL,
+	"requester_id" VARCHAR(24) NOT NULL,
+	PRIMARY KEY("id")
+);
+
+
+
+
+CREATE TABLE IF NOT EXISTS "approvals" (
+	"id" VARCHAR(24) NOT NULL UNIQUE,
+	"level" INTEGER NOT NULL,
+	"status" APPROVAL_STATUS NOT NULL,
+	"approved_at" TIMESTAMP,
+	"rejected_at" TIMESTAMP,
+	"created_at" TIMESTAMP NOT NULL,
+	"updated_at" TIMESTAMP NOT NULL,
+	"approver_id" VARCHAR(32) NOT NULL,
+	"booking_id" VARCHAR(32) NOT NULL,
+	PRIMARY KEY("id")
+);
+
+
+
+
+CREATE TABLE IF NOT EXISTS "maintenances" (
+	"id" VARCHAR(24) NOT NULL UNIQUE,
+	"start_date" TIMESTAMP NOT NULL,
+	"end_date" TIMESTAMP NOT NULL,
+	"note" TEXT NOT NULL,
+	"created_at" TIMESTAMP NOT NULL,
+	"updated_at" TIMESTAMP NOT NULL,
+	"vehicle_id" VARCHAR(24) NOT NULL,
+	PRIMARY KEY("id")
+);
+
+
+
+
+CREATE TABLE IF NOT EXISTS "fuel_transactions" (
+	"id" VARCHAR(24) NOT NULL UNIQUE,
+	"liter_amount" DECIMAL NOT NULL,
+	"price_per_liter" INTEGER NOT NULL,
+	"odometer_at_refuel" INTEGER NOT NULL,
+	"note" TEXT NOT NULL,
+	"created_at" TIMESTAMP NOT NULL,
+	"updated_at" TIMESTAMP NOT NULL,
+	"vehicle_id" VARCHAR(24) NOT NULL,
+	"driver_id" VARCHAR(24) NOT NULL,
+	PRIMARY KEY("id")
+);
+
+
+
+
+CREATE TABLE IF NOT EXISTS "trips" (
+	"id" VARCHAR(24) NOT NULL UNIQUE,
+	"category" TRIP_CATEGORY NOT NULL,
+	"odometer" INTEGER NOT NULL,
+	"created_at" TIMESTAMP NOT NULL,
+	"updated_at" TIMESTAMP NOT NULL,
+	"vehicle_id" VARCHAR(24) NOT NULL,
+	"booking_id" VARCHAR(24) NOT NULL,
+	PRIMARY KEY("id")
+);
+
+
+
+ALTER TABLE "approvals"
+ADD FOREIGN KEY("approver_id") REFERENCES "users"("id")
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "bookings"
+ADD FOREIGN KEY("id") REFERENCES "approvals"("booking_id")
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "bookings"
+ADD FOREIGN KEY("driver_id") REFERENCES "users"("id")
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "bookings"
+ADD FOREIGN KEY("requester_id") REFERENCES "users"("id")
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "users"
+ADD FOREIGN KEY("location_id") REFERENCES "locations"("id")
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "vehicles"
+ADD FOREIGN KEY("location_id") REFERENCES "locations"("id")
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "maintenances"
+ADD FOREIGN KEY("vehicle_id") REFERENCES "vehicles"("id")
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "fuel_transactions"
+ADD FOREIGN KEY("vehicle_id") REFERENCES "vehicles"("id")
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "fuel_transactions"
+ADD FOREIGN KEY("driver_id") REFERENCES "users"("id")
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "bookings"
+ADD FOREIGN KEY("vehicle_id") REFERENCES "vehicles"("id")
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "trips"
+ADD FOREIGN KEY("vehicle_id") REFERENCES "vehicles"("id")
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "trips"
+ADD FOREIGN KEY("booking_id") REFERENCES "bookings"("id")
+ON UPDATE NO ACTION ON DELETE NO ACTION;
