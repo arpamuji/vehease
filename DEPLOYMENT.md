@@ -62,18 +62,46 @@ git checkout deploy/staging
 
 ### 4. Configure Nginx on Host
 
-Copy the Nginx configuration to host:
+Create Nginx configuration file:
 ```bash
-sudo cp docker/nginx/default.conf /etc/nginx/sites-available/vehease
-
-# Edit the configuration
 sudo nano /etc/nginx/sites-available/vehease
 ```
 
-Update these values in the Nginx config:
-- `server_name` - Your domain or VPS IP
-- `root` - Path to your app's public folder (e.g., `/var/www/vehease/public`)
-- `fastcgi_pass` - Should be `localhost:9000` (Docker container PHP-FPM)
+Add this configuration (update `server_name` and `root` path):
+```nginx
+server {
+    listen 80;
+    server_name your-domain.com;  # Change this to your domain or VPS IP
+    root /home/your-user/vehease/public;  # Change this to your actual path
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-Content-Type-Options "nosniff";
+
+    index index.php;
+
+    charset utf-8;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    error_page 404 /index.php;
+
+    location ~ \.php$ {
+        fastcgi_pass localhost:9000;  # PHP-FPM in Docker container
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+        fastcgi_read_timeout 300;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}
+```
 
 Enable the site:
 ```bash
